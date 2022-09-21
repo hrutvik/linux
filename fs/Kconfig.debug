@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config DISABLE_FS_CHECKSUMS
+	bool "Disable redundant checksum verification for filesystems"
+	depends on DEBUG_KERNEL
+	help
+	  Disable filesystem checksum verification for checksums which can be
+	  trivially recomputed from the on-disk data (i.e. no encryption).
+
+	  This option is useful for filesystem testing. For example, fuzzing with
+	  randomly mutated disk images can uncover bugs exploitable by specially-
+	  crafted disks. Redundant checksums are orthogonal to these exploits, as
+	  they can be recomputed for crafted disks. However, for testing it is
+	  more reliable to disable checksums within the kernel than to maintain
+	  image generators which faithfully reimplement per-filesystem checksum
+	  recomputation.
+
+	  Say N if you are unsure. Disable this for production systems!
+
