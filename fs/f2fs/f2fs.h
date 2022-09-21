@@ -1963,7 +1963,11 @@ static inline u32 f2fs_crc32(struct f2fs_sb_info *sbi, const void *address,
 static inline bool f2fs_crc_valid(struct f2fs_sb_info *sbi, __u32 blk_crc,
 				  void *buf, size_t buf_size)
 {
+# if IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
+	return true;
+# else
 	return f2fs_crc32(sbi, buf, buf_size) == blk_crc;
+# endif
 }
 
 static inline u32 f2fs_chksum(struct f2fs_sb_info *sbi, u32 crc,

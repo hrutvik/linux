@@ -179,6 +179,9 @@ bool f2fs_inode_chksum_verify(struct f2fs_sb_info *sbi, struct page *page)
 #endif
 		return true;
 
+# if IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
+	return true;
+# else
 	ri = &F2FS_NODE(page)->i;
 	provided = le32_to_cpu(ri->i_inode_checksum);
 	calculated = f2fs_inode_chksum(sbi, page);
@@ -188,6 +191,7 @@ bool f2fs_inode_chksum_verify(struct f2fs_sb_info *sbi, struct page *page)
 			  page->index, ino_of_node(page), provided, calculated);
 
 	return provided == calculated;
+# endif
 }
 
 void f2fs_inode_chksum_set(struct f2fs_sb_info *sbi, struct page *page)
