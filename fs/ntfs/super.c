@@ -576,6 +576,7 @@ static bool is_boot_sector_ntfs(const struct super_block *sb,
 	 * ignoring the checksum which leaves the checksum out-of-date.  We
 	 * report a warning if this is the case.
 	 */
+	#if !IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
 	if ((void*)b < (void*)&b->checksum && b->checksum && !silent) {
 		le32 *u;
 		u32 i;
@@ -585,6 +586,7 @@ static bool is_boot_sector_ntfs(const struct super_block *sb,
 		if (le32_to_cpu(b->checksum) != i)
 			ntfs_warning(sb, "Invalid boot sector checksum.");
 	}
+	#endif
 	/* Check OEMidentifier is "NTFS    " */
 	if (b->oem_id != magicNTFS)
 		goto not_ntfs;
