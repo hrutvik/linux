@@ -771,7 +771,7 @@ void f2fs_decompress_cluster(struct decompress_io_ctx *dic, bool in_task)
 		u32 provided = le32_to_cpu(dic->cbuf->chksum);
 		u32 calculated = f2fs_crc32(sbi, dic->cbuf->cdata, dic->clen);
 
-		if (provided != calculated) {
+		if (!IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS) && provided != calculated) {
 			if (!is_inode_flag_set(dic->inode, FI_COMPRESS_CORRUPT)) {
 				set_inode_flag(dic->inode, FI_COMPRESS_CORRUPT);
 				printk_ratelimited(
