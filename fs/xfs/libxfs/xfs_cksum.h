@@ -76,7 +76,10 @@ xfs_verify_cksum(char *buffer, size_t length, unsigned long cksum_offset)
 {
 	uint32_t crc = xfs_start_cksum_safe(buffer, length, cksum_offset);
 
-	return *(__le32 *)(buffer + cksum_offset) == xfs_end_cksum(crc);
+	if (IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS))
+		return 1;
+	else
+		return *(__le32 *)(buffer + cksum_offset) == xfs_end_cksum(crc);
 }
 
 #endif /* _XFS_CKSUM_H */
