@@ -3434,8 +3434,10 @@ int btrfs_check_sector_csum(struct btrfs_fs_info *fs_info, struct page *page,
 	crypto_shash_digest(shash, kaddr, fs_info->sectorsize, csum);
 	kunmap_local(kaddr);
 
+	#if !IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
 	if (memcmp(csum, csum_expected, fs_info->csum_size))
 		return -EIO;
+	#endif
 	return 0;
 }
 
@@ -3464,6 +3466,9 @@ int btrfs_check_data_csum(struct inode *inode, struct btrfs_bio *bbio,
 
 	csum_expected = btrfs_csum_ptr(fs_info, bbio->csum, bio_offset);
 
+	#if IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
+	return 0;
+	#else
 	if (btrfs_check_sector_csum(fs_info, page, pgoff, csum, csum_expected))
 		goto zeroit;
 	return 0;
@@ -3477,6 +3482,7 @@ zeroit:
 					     BTRFS_DEV_STAT_CORRUPTION_ERRS);
 	memzero_page(page, pgoff, len);
 	return -EIO;
+	#endif
 }
 
 /*
@@ -3503,6 +3509,9 @@ unsigned int btrfs_verify_data_csum(struct btrfs_bio *bbio,
 	u32 pg_off;
 	unsigned int result = 0;
 
+	#if IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
+	return 0;
+	#else
 	/*
 	 * This only happens for NODATASUM or compressed read.
 	 * Normally this should be covered by above check for compressed read
@@ -3544,6 +3553,7 @@ unsigned int btrfs_verify_data_csum(struct btrfs_bio *bbio,
 		}
 	}
 	return result;
+	#endif
 }
 
 /*

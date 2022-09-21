@@ -495,6 +495,7 @@ static int validate_extent_buffer(struct extent_buffer *eb)
 	header_csum = page_address(eb->pages[0]) +
 		get_eb_offset_in_page(eb, offsetof(struct btrfs_header, csum));
 
+# if !IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
 	if (memcmp(result, header_csum, csum_size) != 0) {
 		btrfs_warn_rl(fs_info,
 "checksum verify failed on logical %llu mirror %u wanted " CSUM_FMT " found " CSUM_FMT " level %d",
@@ -505,6 +506,7 @@ static int validate_extent_buffer(struct extent_buffer *eb)
 		ret = -EUCLEAN;
 		goto out;
 	}
+# endif
 
 	/*
 	 * If this is a leaf block and it is corrupt, set the corrupt bit so
