@@ -696,12 +696,17 @@ static int exfat_load_upcase_table(struct super_block *sb,
 		brelse(bh);
 	}
 
+	#if IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
+	return 0;
+	#else
 	if (index >= 0xFFFF && utbl_checksum == chksum)
 		return 0;
 
 	exfat_err(sb, "failed to load upcase table (idx : 0x%08x, chksum : 0x%08x, utbl_chksum : 0x%08x)",
 		  index, chksum, utbl_checksum);
 	ret = -EINVAL;
+	#endif
+
 free_table:
 	exfat_free_upcase_table(sbi);
 	return ret;

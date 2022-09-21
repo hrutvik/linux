@@ -564,6 +564,7 @@ static int exfat_verify_boot_region(struct super_block *sb)
 	if (!bh)
 		return -EIO;
 
+	#if !IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS)
 	for (i = 0; i < sb->s_blocksize; i += sizeof(u32)) {
 		p_chksum = (__le32 *)&bh->b_data[i];
 		if (le32_to_cpu(*p_chksum) != chksum) {
@@ -573,6 +574,7 @@ static int exfat_verify_boot_region(struct super_block *sb)
 			return -EINVAL;
 		}
 	}
+	#endif
 	brelse(bh);
 	return 0;
 }
