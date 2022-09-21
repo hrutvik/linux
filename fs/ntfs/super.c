@@ -582,7 +582,8 @@ static bool is_boot_sector_ntfs(const struct super_block *sb,
 
 		for (i = 0, u = (le32*)b; u < (le32*)(&b->checksum); ++u)
 			i += le32_to_cpup(u);
-		if (le32_to_cpu(b->checksum) != i)
+		if (!IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS) &&
+		    le32_to_cpu(b->checksum) != i)
 			ntfs_warning(sb, "Invalid boot sector checksum.");
 	}
 	/* Check OEMidentifier is "NTFS    " */
