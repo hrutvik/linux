@@ -559,7 +559,8 @@ static int io_ctl_check_crc(struct btrfs_io_ctl *io_ctl, int index)
 	io_ctl_map_page(io_ctl, 0);
 	crc = btrfs_crc32c(crc, io_ctl->orig + offset, PAGE_SIZE - offset);
 	btrfs_crc32c_final(crc, (u8 *)&crc);
-	if (val != crc) {
+	if (!IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS) &&
+	    val != crc) {
 		btrfs_err_rl(io_ctl->fs_info,
 			"csum mismatch on free space cache");
 		io_ctl_unmap_page(io_ctl);
