@@ -3434,7 +3434,8 @@ int btrfs_check_sector_csum(struct btrfs_fs_info *fs_info, struct page *page,
 	crypto_shash_digest(shash, kaddr, fs_info->sectorsize, csum);
 	kunmap_local(kaddr);
 
-	if (memcmp(csum, csum_expected, fs_info->csum_size))
+	if (!IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS) &&
+	    memcmp(csum, csum_expected, fs_info->csum_size))
 		return -EIO;
 	return 0;
 }

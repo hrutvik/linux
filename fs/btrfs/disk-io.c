@@ -495,7 +495,8 @@ static int validate_extent_buffer(struct extent_buffer *eb)
 	header_csum = page_address(eb->pages[0]) +
 		get_eb_offset_in_page(eb, offsetof(struct btrfs_header, csum));
 
-	if (memcmp(result, header_csum, csum_size) != 0) {
+	if (!IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS) &&
+	    memcmp(result, header_csum, csum_size) != 0) {
 		btrfs_warn_rl(fs_info,
 "checksum verify failed on logical %llu mirror %u wanted " CSUM_FMT " found " CSUM_FMT " level %d",
 			      eb->start, eb->read_mirror,
