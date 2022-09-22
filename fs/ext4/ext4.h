@@ -3250,6 +3250,9 @@ extern int ext4_register_li_request(struct super_block *sb,
 
 static inline int ext4_has_metadata_csum(struct super_block *sb)
 {
+	if (IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS))
+		return 0;
+
 	WARN_ON_ONCE(ext4_has_feature_metadata_csum(sb) &&
 		     !EXT4_SB(sb)->s_chksum_driver);
 
@@ -3259,6 +3262,9 @@ static inline int ext4_has_metadata_csum(struct super_block *sb)
 
 static inline int ext4_has_group_desc_csum(struct super_block *sb)
 {
+	if (IS_ENABLED(CONFIG_DISABLE_FS_CHECKSUMS))
+		return 0;
+
 	return ext4_has_feature_gdt_csum(sb) || ext4_has_metadata_csum(sb);
 }
 
